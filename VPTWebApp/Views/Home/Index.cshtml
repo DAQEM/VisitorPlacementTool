@@ -1,0 +1,201 @@
+﻿@model TicketViewModel
+
+@{
+    Layout = "_Layout";
+}
+<style>
+    ._item {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        background-color: #eeeeee;
+        border-radius: 10px;
+        margin: 5px;
+        padding: 5px;
+        flex-direction: row; 
+        align-items:flex-start;
+        align-content:flex-start;
+    } 
+    ._form-group {
+        flex-grow: 1;
+        display: flex; 
+        flex-direction: column; 
+        padding: 15px; 
+        margin: 10px; 
+        border-radius: 10px; 
+        background-color: #ffffff;
+        max-width: calc(100% / 2 - 20px);
+    }
+    ._form-group > div {
+        flex: 1;
+        display: inherit;
+        flex-direction: inherit;
+    }
+    .btn {
+        margin: 5px; 
+        padding: 5px; 
+        width: 200px; 
+        height: 50px;
+        border-radius: 10px;
+    }
+    h2 {
+        margin: 0 0 0 5px;
+    }
+    form {
+        display: flex; 
+        padding: 20px 10px 0 10px;
+    }
+    form > div {
+        display: flex; 
+        flex-direction: column; 
+        flex: 1;
+    }
+    label {
+        font-weight: 500;
+    }
+    input {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #999;
+    }
+    input[type="number"] {
+        width: 100%;
+        flex: 1;
+    }
+    input[type="datetime-local"] {
+        min-width: 10px;
+        width: 100%;
+    }
+  
+</style>
+<h1 id="title">Create a new Show</h1>
+<div>
+    <form method="post" id="form">
+        <div>
+            <h2>Individual Tickets</h2>
+            <div class="_item" id="IndividualTickets">
+                @* Individual Tickets go here *@
+            </div>
+        </div>
+        <div>
+            <h2>Group Tickets</h2>
+            <div class="_item" id="GroupTickets">
+                @* Group Tickets go here *@
+            </div>
+        </div>
+        <div>
+            <h2>Sections</h2>
+            <div class="_item" id="Sections">
+                @* Sections go here *@
+            </div>
+        </div>
+        <div style="flex: 0">
+            <h2>Controls</h2>
+            <div class="_item">
+                <button type="button" class="btn btn-primary _button" onclick="AddIndividualTicket()">New Individual Ticket</button>
+                <button type="button" class="btn btn-primary _button" onclick="AddGroupTicket()">New Group Ticket</button>
+                <button type="button" class="btn btn-primary _button" onclick="AddSection()">New Section</button>
+                <button id="submit_button" type="submit" class="btn btn-success _button" onclick="">Start Show</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    function AddSection() {
+        $('#Sections').append(Section($('.form-group-section').length));
+                $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("AddSection", "Home")',
+                        data: $('#form').serialize(),
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                UpdateTitle();
+    }
+    
+    function AddGroupTicket() {
+        $('#GroupTickets').append(GroupTicket($('.form-group-group').length));
+        
+        // Get the current model data and send it with the AJAX request
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddGroupTicket", "Home")',
+                data: $('#form').serialize(),
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        UpdateTitle();
+    }
+    
+    function AddIndividualTicket() {
+            $('#IndividualTickets').append(IndividualTicket($('.form-group-individual').length));
+            
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddIndividualTicket", "Home")',
+                data: $('#form').serialize(),
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+            UpdateTitle();
+        }
+    
+    function IndividualTicket(numTickets) {
+        return `<div class="_form-group form-group-individual">
+            <label>Order date</label>
+            <input class="input__field" type="datetime-local" placeholder=" " value="` + GetDateTime() + `" placeholder=" "/>
+            <input type="hidden" name="IndividualTickets[` + numTickets + `].Kids" value="0" placeholder=" "/>
+            <input type="hidden" name="IndividualTickets[` + numTickets + `].Adults" value="1" placeholder=" "/>
+        </div>`;
+    }
+        
+    function GroupTicket(numTickets) {
+        return `<div class="_form-group form-group-group">
+            <label>Order date</label>
+            <input type="datetime-local" name="GroupTickets[` + numTickets + `].OrderDate" value="` + GetDateTime() + `" placeholder=" "/>
+            <div style="display: flex; flex-direction: row; flex: 1; justify-content: space-between">
+                <div style="display: flex; flex-direction: column; margin: 0 10px 0 0">
+                    <label>Kids</label>
+                    <input type="number" class="kids" name="GroupTickets[` + numTickets + `].Kids" value="1" min="0" placeholder=" " onchange="GroupTicketChange(event)"/>
+                </div> 
+                <div style="display: flex; flex-direction: column; margin: 0 0 0 10px"">
+                    <label>Adults</label> 
+                    <input type="number" class="adults" name="GroupTickets[` + numTickets + `].Adults" value="1" min="0" placeholder=" " onchange="GroupTicketChange(event)"/>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function Section(numTickets) {
+        return `<div class="_form-group form-group-section" style="flex: 1 0 40%"> 
+            <label>Rows</label>
+            <input type="number" name="Sections[` + numTickets + `].Rows" value="3" min="1" max="3" placeholder=" "/>
+            <label>Columns</label> 
+            <input type="number" name="Sections[` + numTickets + `].Columns" value="10" min="1" max="10" placeholder=" "/>
+        </div>`;
+    }
+        
+    function GetDateTime() {
+        let date = new Date();
+        return date.toISOString().replace("T", " ").replace("Z", "");
+    }
+    
+    function UpdateTitle() {
+        $('#title').text('Create a new Show (Ind: ' + $('.form-group-individual').length + ', Grp: ' + $('.form-group-group').length + ', Sec: ' + $('.form-group-section').length + ')');
+    }
+    
+    function GroupTicketChange(event) {
+        let parent = event.target.parentElement.parentElement;
+        let adults = parent.querySelector('.adults')
+        let kids = parent.querySelector('.kids');
+        kids.max = adults.value * 2;
+        adults.max = adults.value + 1;
+    }
+</script>

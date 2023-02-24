@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VPTLib\VPTLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Ticket\CreateTicket.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Views\Test" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\images\actor-chaplin-comedy.svg" />
+      <None Include="wwwroot\images\afro-avatar-male-2.svg" />
+      <None Include="wwwroot\images\afro-boy-child.svg" />
+      <None Include="wwwroot\images\afro-female-person.svg" />
+      <None Include="wwwroot\images\artist-avatar-marilyn.svg" />
+      <None Include="wwwroot\images\avatar-bad-breaking.svg" />
+      <None Include="wwwroot\images\avatar-boy-kid.svg" />
+      <None Include="wwwroot\images\avatar-boy-male.svg" />
+      <None Include="wwwroot\images\avatar-child-girl.svg" />
+      <None Include="wwwroot\images\avatar-einstein-professor.svg" />
+      <None Include="wwwroot\images\avatar-elderly-grandma.svg" />
+      <None Include="wwwroot\images\avatar-female-girl.svg" />
+      <None Include="wwwroot\images\avatar-female-portrait-2.svg" />
+      <None Include="wwwroot\images\avatar-female-portrait.svg" />
+      <None Include="wwwroot\images\avatar-hindi-indian.svg" />
+      <None Include="wwwroot\images\avatar-male-man.svg" />
+      <None Include="wwwroot\images\avatar-male-president.svg" />
+      <None Include="wwwroot\images\avatar-man-muslim.svg" />
+      <None Include="wwwroot\images\avatar-man-person.svg" />
+      <None Include="wwwroot\images\avatar-nun-sister.svg" />
+      <None Include="wwwroot\images\avatar-person-pilot.svg" />
+      <None Include="wwwroot\images\beard-hipster-male.svg" />
+      <None Include="wwwroot\images\boy-indian-kid.svg" />
+      <None Include="wwwroot\images\builder-helmet-worker.svg" />
+      <None Include="wwwroot\images\child-girl-kid.svg" />
+      <None Include="wwwroot\images\fighter-luchador-man.svg" />
+      <None Include="wwwroot\images\indian-male-man.svg" />
+      <None Include="wwwroot\images\indian-man-sikh.svg" />
+      <None Include="wwwroot\images\male-man-old.svg" />
+    </ItemGroup>
+
+</Project>

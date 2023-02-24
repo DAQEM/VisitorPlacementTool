@@ -1,0 +1,109 @@
+﻿@using VPTLib
+@using System.Drawing
+@model ShowViewModel
+
+@{
+    ViewBag.Title = "Show";
+
+    List<string> adultIcons = new()
+    {
+        "actor-chaplin-comedy", "afro-avatar-male-2", "afro-female-person", "artist-avatar-marilyn", "avatar-bad-breaking", "avatar-einstein-professor", 
+        "avatar-elderly-grandma", "avatar-female-girl", "avatar-female-portrait", "avatar-female-portrait-2", "avatar-hindi-indian", "avatar-male-man", 
+        "avatar-male-president", "avatar-man-muslim", "avatar-man-person", "avatar-nun-sister", "avatar-person-pilot", "beard-hipster-male", "builder-helmet-worker", 
+        "fighter-luchador-man", "indian-male-man", "indian-man-sikh", "male-man-old"
+    };
+
+    List<string> kidIcons = new()
+    {
+        "afro-boy-child", "avatar-boy-kid", "avatar-boy-male", "avatar-child-girl", "boy-indian-kid", "child-girl-kid"
+    };
+
+    Random random = new();
+    Dictionary<Group, string> groupColors = Model.Show.Tickets
+        .Where(t => t is GroupTicket)
+        .Cast<GroupTicket>()
+        .Select(gt => gt.Group)
+        .ToDictionary(g => g, g => RandomHexColor());
+
+    string RandomHexColor()
+    {
+        Color color = Color.FromArgb(random.Next(100, 256), random.Next(100, 256), random.Next(100, 256));
+        return "#" + color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2");
+    }
+
+    string GetHexColor(Visitor? visitor)
+    {
+        if (visitor == null) return "#ffffff";
+        return groupColors
+            .Where(keyValuePair => keyValuePair.Key.Visitors
+                .Contains(visitor))
+            .Select(keyValuePair => keyValuePair.Value)
+            .FirstOrDefault() ?? "#bbbbbb";
+    }
+    
+    string GetRandomAdultIcon()
+    {
+        return adultIcons[random.Next(0, adultIcons.Count)];
+    }
+
+    string GetRandomKidIcon()
+    {
+        return kidIcons[random.Next(0, kidIcons.Count)];
+    }
+    
+    string GetRandomIcon(Visitor? visitor)
+    {
+        return "/images/" + (visitor == null ? "empty" : visitor.IsKid ? GetRandomKidIcon() : GetRandomAdultIcon()) + ".svg";
+    }
+
+    string GetSectionId(Section section)
+    {
+        int index = Model.Show.Sections.ToList().IndexOf(section);
+        string sectionId = "";
+        while (index >= 0)
+        {
+            sectionId = (char)('A' + index % 26) + sectionId;
+            index /= 26;
+            index--;
+        }
+        return sectionId;
+    }
+}
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap">
+    @foreach (Section sections in Model.Show.Sections)
+    {
+        //create a list of lists of seats, where each list of seats is a row with LINQ
+        List<List<Seat>> rows = sections.Seats
+            .GroupBy(seat => seat.Row)
+            .Select(group => group.ToList())
+            .ToList();
+
+        //One section
+        <div>
+            <h2 style="margin-left: 10px; margin-top: 20px">Section @GetSectionId(sections)</h2>
+            <div style="display: grid; grid-column: 10; grid-row: 3; padding: 10px; margin: 10px; border-radius: 10px; background-color: #ddd">
+                @foreach (List<Seat> seats in rows)
+                {
+                    //One row
+                    <div style="display: flex;">
+                        @foreach (Seat seat in seats)
+                        {
+                            Visitor? visitor = seat.Visitor;
+                            string hexColor = GetHexColor(visitor);
+                            string icon = visitor == null ? "O" : visitor.IsKid ? "x" : "X";
+                            //One seat
+                            <div style="display: flex; justify-content: center; align-items: center; height: 70px; width: 70px; background-color: @hexColor; flex: 1; margin: 5px; border-radius: 5px" class="seat text-center">
+                                @* <p style="margin: 0">@icon</p> *@
+                                <img src="@GetRandomIcon(visitor)" alt="visitor icon"/>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+
